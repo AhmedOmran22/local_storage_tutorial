@@ -1,42 +1,51 @@
 import 'package:hive/hive.dart';
 
 class HiveService {
-  /// Open box helper to ensure box is open and accessible
-  Future<Box<T>> _getBox<T>(String boxName) async {
-    if (Hive.isBoxOpen(boxName)) {
-      return Hive.box<T>(boxName);
+  static final Map<String, Box> _openBoxes = {};
+
+  static Future<Box> _getBox(String boxName, {Type? type}) async {
+    if (_openBoxes.containsKey(boxName)) {
+      return _openBoxes[boxName]!;
     }
-    return await Hive.openBox<T>(boxName);
+
+    Box box;
+    if (type != null) {
+      box = await Hive.openBox(boxName);
+    } else {
+      box = await Hive.openBox(boxName);
+    }
+    _openBoxes[boxName] = box;
+    return box;
   }
 
   /// Save data in box by name (replaces all data)
   Future<void> saveData<T>(String boxName, List<T> data) async {
-    final box = await _getBox<T>(boxName);
+    final box = await _getBox(boxName, type: T);
     await box.clear();
     await box.addAll(data);
   }
 
   /// Add data to existing box
   Future<void> addData<T>(String boxName, List<T> data) async {
-    final box = await _getBox<T>(boxName);
+    final box = await _getBox(boxName, type: T);
     await box.addAll(data);
   }
 
   /// Get data from box by name
   Future<List<T>> getData<T>(String boxName) async {
-    final box = await _getBox<T>(boxName);
-    return box.values.toList();
+    final box = await _getBox(boxName, type: T);
+    return box.values.cast<T>().toList();
   }
 
   /// Get single item by key
   Future<T?> getItem<T>(String boxName, dynamic key) async {
-    final box = await _getBox<T>(boxName);
-    return box.get(key);
+    final box = await _getBox(boxName, type: T);
+    return box.get(key) as T?;
   }
 
   /// Save single item by key
   Future<void> saveItem<T>(String boxName, dynamic key, T data) async {
-    final box = await _getBox<T>(boxName);
+    final box = await _getBox(boxName, type: T);
     await box.put(key, data);
   }
 
