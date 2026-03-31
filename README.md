@@ -150,7 +150,7 @@ Each screen features:
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AhmedOmran22/local_storage_tutorial
    cd local_storage_tutorial
    ```
 
