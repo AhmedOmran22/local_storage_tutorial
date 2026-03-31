@@ -9,10 +9,10 @@ class HiveService {
     return await Hive.openBox<T>(boxName);
   }
 
-  /// Save data in box by name
+  /// Save data in box by name (replaces all data)
   Future<void> saveData<T>(String boxName, List<T> data) async {
     final box = await _getBox<T>(boxName);
-    await box.clear(); // Clear old data
+    await box.clear();
     await box.addAll(data);
   }
 
@@ -25,8 +25,25 @@ class HiveService {
   /// Get data from box by name
   Future<List<T>> getData<T>(String boxName) async {
     final box = await _getBox<T>(boxName);
-    final data = box.values.toList();
-    return data;
+    return box.values.toList();
+  }
+
+  /// Get single item by key
+  Future<T?> getItem<T>(String boxName, dynamic key) async {
+    final box = await _getBox<T>(boxName);
+    return box.get(key);
+  }
+
+  /// Save single item by key
+  Future<void> saveItem<T>(String boxName, dynamic key, T data) async {
+    final box = await _getBox<T>(boxName);
+    await box.put(key, data);
+  }
+
+  /// Delete single item by key
+  Future<void> deleteItem(String boxName, dynamic key) async {
+    final box = await _getBox(boxName);
+    await box.delete(key);
   }
 
   /// Clear All data from the Box

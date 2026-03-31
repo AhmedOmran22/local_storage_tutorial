@@ -3,13 +3,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'databases/prefs_service.dart';
 import 'databases/secure_storage_service.dart';
+import 'models/user_settings_model.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
+  Hive.registerAdapter(UserSettingsModelAdapter());
+
   await PrefsService.init();
   SecureStorageService.initSecureStorage();
+
   runApp(const MyApp());
 }
 
